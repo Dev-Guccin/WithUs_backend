@@ -19,19 +19,20 @@ function calc_end_date(row){
 
 }
 /* GET test + MySQL연동 test!!*/
-router.get('/', function(req, res, next) {
+router.get('/:page', function(req, res, next) {
+  //페이지네이션
+  var page = (parseInt(req.params.page)-1) * 20;
   //모든 데이터를 최신순으로 20개만 가져온다.
-  var sql = 'SELECT CB_title,CB_field,CB_organization,CB_finalDate,CB_photo FROM withus.CompeteBoard order by CB_startDate desc limit 20;';
+  var sql = 'SELECT CB_title,CB_field,CB_organization,CB_finalDate,CB_photo FROM withus.CompeteBoard order by CB_startDate desc limit 20 offset '+page+";";
   conn.query(sql, function (err, rows, fields) {
     if(err) console.log('query is not excuted. select fail...\n' + err);
     else {
       //데이터의 마감 일을 계산한다.
-      console.log(rows)
+      //console.log(rows)
       //calc_end_date(rows[0]);
       res.send(rows);
     }
   });
 });
-
 
 module.exports = router;
