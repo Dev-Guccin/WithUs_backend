@@ -44,9 +44,6 @@ router.get('/detail/:CB_code', function(req, res, next) {
   conn.query(sql, function (err, rows, fields) {
     if(err) console.log('query is not excuted. select fail...\n' + err);
     else {
-      //데이터의 마감 일을 계산한다.
-      //console.log(rows)
-      //calc_end_date(rows[0]);
       res.send(rows);
     }
   });
