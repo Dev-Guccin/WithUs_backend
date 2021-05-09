@@ -27,4 +27,8 @@ router.post('/join', function(req, res, next) { // 회원가입 라우터
   });
 });
 
+router.post('/modify', (req, res, next) => { // 마이페이지 회원정보 변경 (아이디, 이름, 성별은 변경 불가능)
+  console.log(req.body);
+})
+
 module.exports = router;
