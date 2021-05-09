@@ -53,7 +53,7 @@ router.post('/options/:page', function(req, res, next) {
   if(fieldlist.length != 0){
     fieldstring = "CB_field in ("+ fieldlist.join(",") + ")"
   }
-  console.log("field:",fieldstring)
+  console.log("field:",fieldstring,"/fieldnum:",fieldstring.length)
   // 타켓의 값을 확인하여 db query를 만든다.
   targetlist =[]
   targetstring = ""
@@ -65,22 +65,23 @@ router.post('/options/:page', function(req, res, next) {
   if(targetlist.length != 0){
     targetstring = "CB_target REGEXP '"+ targetlist.join("|") + "'"
   }
-  console.log("target:",targetstring)
+  console.log("target:",targetstring,"/targetnum:",targetstring.length)
   // 키워드의 값을 확인하여 db query를 만든다.
   keywordlist = data.keyword.replace(/ /,"").split("#").slice(1)
   keywordstring = ""
   if(keywordlist.length != 0){
     keywordstring = "CB_title REGEXP '"+keywordlist.join("|")+"'"
   }
-  console.log("keyword:",keywordstring)
-
+  console.log("keyword:",keywordstring,"/keywordnum:",keywordstring.length)
+  console.log((fieldstring.length > 0 || targetstring.length > 0))
+  console.log(keywordstring.length > 0)
   //DB쿼리를 날린다.
   var page = (parseInt(req.params.page)-1) * 20;
   var sql = `SELECT CB_code,CB_title,CB_field,CB_organization,CB_finalDate,CB_photo FROM withus.CompeteBoard `
   +`${(fieldstring.length > 0 || targetstring.length > 0 || keywordstring.length > 0)? "where ":""}`
   +`${fieldstring}`
   +`${(fieldstring.length > 0 && targetstring.length > 0 )? "and "+targetstring : targetstring}`
-  +`${(targetstring.length > 0 && keywordstring.legnth > 0)? "and "+keywordstring : keywordstring }`
+  +`${((fieldstring.length > 0 || targetstring.length > 0) && keywordstring.length > 0)? "and "+keywordstring : keywordstring }`
   +`order by CB_startDate desc limit 20 offset ${page};`;
   console.log("sql :",  sql)
   conn.query(sql, function (err, rows, fields) {
