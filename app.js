@@ -34,7 +34,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
-  resave : false,
+  //resave : false, // 이거하면 쿠키 인증이 안됨.
+  resave : true,
   saveUninitialized : false,
   secret : process.env.COOKIE_SECRET,
   // store : new FileStore(),
