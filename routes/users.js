@@ -7,6 +7,8 @@ const conn = db.init();
 
 router.post('/join', function(req, res, next) { // 회원가입 라우터
 
+  console.log(req.body);
+
   var Originalpassword = req.body.User_password;
 
   bcrypt.genSalt(saltRounds, function(err, salt) {
@@ -14,7 +16,7 @@ router.post('/join', function(req, res, next) { // 회원가입 라우터
     bcrypt.hash(Originalpassword, salt, function(err, hash) {
         if(err) return res.status(400).json({SignUp : false, message : "password encoding error"});
         else {
-          var sql = "Insert into User (User_id, User_name, User_university, User_gender, User_phone, User_nickname, User_major, User_area, User_certificate, User_introduction, User_password) values (?,?,?,?,?,?,?,?,?)";
+          var sql = "Insert into User (User_id, User_name, User_university, User_gender, User_phone, User_nickname, User_major, User_area, User_certificate, User_introduction, User_password) values (?,?,?,?,?,?,?,?,?,?,?)";
           var params = [req.body.User_id, req.body.User_name, req.body.User_university, req.body.User_gender, req.body.User_phone, req.body.User_nickname, req.body.User_major, req.body.User_area, req.body.User_certificate, req.body.User_introduction, hash];
           conn.query(sql, params, function (err, rows, fields) {
             if(err) return res.status(400).json({SignUp : false});
@@ -45,6 +47,18 @@ router.post('/modify', (req, res, next) => { // 마이페이지 회원정보 변
           // return res.status(400).json({select : false, message : "select query error"});
         };
       });
+})
+
+router.post('/Interest', (req, res, next) => {
+  console.log(req.body);
+  // var sql = "update Interest set User_code = ?, ScienceEnginnering = ?, ScienceEnginnering = ?, Environment = ?, Employment = ?, Art = ?, Academic = ?, Idea = ?, UCC = ?, culture = ?, Design = ?, Slogan = ?, Economy = ?"
+  var params = [req.body.User_code, req.body.ScienceEnginnering, req.body.ContentsWebtoon, req.body.Environment, req.body.Employment, req.body.Art, req.body.Academic, req.body.Idea, req.body.UCC, req.body.culture, req.body.Design, req.body.Slogan, req.body.Economy];
+  conn.query(sql, params, function (err, rows, fields) {
+    if(err) return res.status(400).json({Interest: false,  message : "Interest add error"});
+    else {
+      return res.status(200).json({Interest : true, message : "Interest add success"});
+    };
+  });
 })
 
 module.exports = router;
