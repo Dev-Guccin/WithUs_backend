@@ -6,11 +6,14 @@ const auth = require('./Authentication');
 router.post('/', function(req, res, next) {
     passport.authenticate('local', function(err, user, info) {
       if (err) {
-          res.status(400).json({loginSuccess : false});
+          return res.status(400).json({loginSuccess : false, message : info});
         }
-      if (!user) {res.status(400).json({loginSuccess : false});}
+      if (!user) {
+        console.log("아이디가 없거나 틀림");
+        return res.status(200).json({loginSuccess : false, message : info});
+      }
       req.logIn(user, function(err) {
-        if (err) {res.status(400).json({loginSuccess : false});}
+        if (err) {return res.status(400).json({loginSuccess : false, message : "query error"});}
         else {
             return res.status(200).json({loginSuccess : true, user : user});
         }

@@ -61,4 +61,28 @@ router.post('/Interest', (req, res, next) => {
   });
 })
 
+router.post('/Quit', (req, res, next) => {
+  console.log(req.body);
+
+  var getPassword = "select User_password from User where User_code = ?";
+  conn.query(getPassword, req.body.User_code, async function(err, rows, fields) {
+    if(err) return res.status(400).json({selectPassword : false, message : "query error"});
+    else {
+      const result = await bcrypt.compare(req.body.User_password, rows[0].User_password);
+      if(result) {
+        var sql = "delete from User where User_code = ?";
+        var params = [req.body.User_code];
+        conn.query(sql, params, function(err, rows, fields) {
+          if(err) return res.status(400).json({quit : false, message : "query error"});
+          else {
+            return res.status(200).json({quit : true, message : "quit success"});
+          }
+        })
+      } else {
+        return res.status(400).json({quit : false, message : "비밀번호가 틀렸습니다."});
+      }
+    }
+  })
+})
+
 module.exports = router;
