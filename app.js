@@ -56,7 +56,7 @@ app.use('/users', usersRouter);
 app.use('/contest', contestRouter);
 app.use('/passport', LoginRouter);
 app.use('/admin', adminRouter);
-app.use('/team', teamRouter)
+app.use('/team', teamRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
