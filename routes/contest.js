@@ -75,14 +75,30 @@ router.post('/options/:page', function(req, res, next) {
   console.log("keyword:",keywordstring,"/keywordnum:",keywordstring.length)
   console.log((fieldstring.length > 0 || targetstring.length > 0))
   console.log(keywordstring.length > 0)
+
+  // 정렬방식을 확인하여 db query를 만든다.
+  sort = data.sort
+  console.log("sort방식:", typeof(sort))
+  //1->최신순, 2->조회순 3->마감날짜순
+  sortstring=""
+  if(sort == 1){
+    sortstring="order by CB_startDate desc"
+  }
+  else if(sort == 2){
+    sortstring="order by CB_count desc"
+  }
+  else if(sort == 3){
+    sortstring="order by CB_finalDate desc"
+  }
+
   //DB쿼리를 날린다.
   var page = (parseInt(req.params.page)-1) * 20;
-  var sql = `SELECT CB_code,CB_title,CB_field,CB_organization,CB_finalDate,CB_photo FROM withus.CompeteBoard `
+  var sql = `SELECT CB_code,CB_title,CB_field,CB_organization,CB_finalDate,CB_photo,CB_count FROM withus.CompeteBoard `
   +`${(fieldstring.length > 0 || targetstring.length > 0 || keywordstring.length > 0)? "where ":""}`
   +`${fieldstring}`
   +`${(fieldstring.length > 0 && targetstring.length > 0 )? "and "+targetstring : targetstring}`
   +`${((fieldstring.length > 0 || targetstring.length > 0) && keywordstring.length > 0)? "and "+keywordstring : keywordstring }`
-  +`order by CB_startDate desc limit 20 offset ${page};`;
+  +`${sortstring} limit 20 offset ${page};`;
   console.log("sql :",  sql)
   conn.query(sql, function (err, rows, fields) {
     if(err) console.log('query is not excuted. select fail...\n' + err);
