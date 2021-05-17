@@ -74,8 +74,9 @@ router.post('/modify_test/:User_code', function(req, res, next) {
 
 /* 회원정보 삭제 업데이트 DB 쿼리 */
 router.post('/delete/user/:User_code', function(req, res, next) {
-  console.log(req.body);
-  var User_code = parseInt(req.params.User_code);
+  console.log(typeof(req.body.User_code));
+  console.log(typeof(req.params.User_code));
+  var User_code = req.body.User_code;
   var sql = 'DELETE FROM withus.User WHERE User_code = '+User_code+';';
   conn.query(sql);
   res.send('성공!!!');
