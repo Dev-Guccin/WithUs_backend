@@ -3,11 +3,10 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const db = require('../config/database.js');
+const {idOVerlap} = require('./Authentication');
 const conn = db.init();
 
-router.post('/join', function(req, res, next) { // 회원가입 라우터
-
-  console.log(req.body);
+router.post('/join', idOVerlap ,function(req, res, next) { // 회원가입 라우터
 
   var Originalpassword = req.body.User_password;
 
@@ -19,7 +18,7 @@ router.post('/join', function(req, res, next) { // 회원가입 라우터
           var sql = "Insert into User (User_id, User_name, User_university, User_gender, User_phone, User_nickname, User_major, User_area, User_certificate, User_introduction, User_password) values (?,?,?,?,?,?,?,?,?,?,?)";
           var params = [req.body.User_id, req.body.User_name, req.body.User_university, req.body.User_gender, req.body.User_phone, req.body.User_nickname, req.body.User_major, req.body.User_area, req.body.User_certificate, req.body.User_introduction, hash];
           conn.query(sql, params, function (err, rows, fields) {
-            if(err) return res.status(400).json({SignUp : false});
+            if(err) return res.status(400).json({SignUp : false, message : "쿼리 에러"});
             else {
               return res.status(200).json({SignUp : true});
             };
@@ -80,6 +79,41 @@ router.post('/Quit', (req, res, next) => {
         })
       } else {
         return res.status(400).json({quit : false, message : "비밀번호가 틀렸습니다."});
+      }
+    }
+  })
+})
+
+router.post('/modifyPassword', (req, res) => {
+  var getPassword = "select User_password from User where User_code = ?";
+  conn.query(getPassword, req.body.User_code, async function(err, rows, fields) {
+    if(err) return res.status(400).json({selectPassword : false, message : "query error"});
+    else {
+      //User_current_password가 현재 DB비밀번호와 일치하는지 확인
+      console.log("여기까지 확인");
+      const result = await bcrypt.compare(req.body.User_current_password, rows[0].User_password);
+      if(result) {
+        //일치한다면 바꾸려고하는 비밀번호(User_password)를 암호화
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+          if(err) return res.status(400).json({modify : false, message : "비밀번호 암호화 실패"});
+          bcrypt.hash(req.body.User_password, salt, function(err, hash) {
+            if(err) return res.status(400).json({modify : false, message : "비밀번호 암호화 실패"});
+            else {
+              var sql = "update User set User_password = ? where User_code = ?";
+              var params = [hash, req.body.User_code];
+              conn.query(sql, params, function(err, rows, fields) {
+                if(err) return res.status(400).json({modify : false, message : "암호화한 코드 삽입 실패"});
+                else {
+                  return res.status(200).json({modify : true, message : "modify success"});
+                }
+              })
+            }
+          })
+        })
+      } else {
+        //아니면 error 출력
+        console.log("의심부분");
+        return res.status(200).json({modify : false, message : "현재 비밀번호가 틀렸습니다."});
       }
     }
   })
