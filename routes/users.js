@@ -48,16 +48,30 @@ router.post('/modify', (req, res, next) => { // 마이페이지 회원정보 변
       });
 })
 
+//관심사 추가
 router.post('/Interest', (req, res, next) => {
   console.log(req.body);
-  // var sql = "update Interest set User_code = ?, ScienceEnginnering = ?, ScienceEnginnering = ?, Environment = ?, Employment = ?, Art = ?, Academic = ?, Idea = ?, UCC = ?, culture = ?, Design = ?, Slogan = ?, Economy = ?"
-  var params = [req.body.User_code, req.body.ScienceEnginnering, req.body.ContentsWebtoon, req.body.Environment, req.body.Employment, req.body.Art, req.body.Academic, req.body.Idea, req.body.UCC, req.body.culture, req.body.Design, req.body.Slogan, req.body.Economy];
+
+  var sql = "Insert into Interest (User_code, ScienceEnginnering, ContentsWebtoon, EnvironmentEnergy, Employment, Art, Academic, Idea, UCC, culture, Design, Slogan, Economy) values (?,?,?,?,?,?,?,?,?,?,?,?,?) on duplicate key update ScienceEnginnering = ?, ContentsWebtoon = ?, EnvironmentEnergy = ?, Employment = ?, Art = ?, Academic = ?, Idea = ?, UCC = ?, culture = ?, Design = ?, Slogan = ?, Economy = ?"
+  var params = [req.body.User_code, req.body.ScienceEnginnering, req.body.ContentsWebtoon, req.body.EnvironmentEnergy, req.body.Employment, req.body.Art, req.body.Academic, req.body.Idea, req.body.UCC, req.body.culture, req.body.Design, req.body.Slogan, req.body.Economy, req.body.ScienceEnginnering, req.body.ContentsWebtoon, req.body.EnvironmentEnergy, req.body.Employment, req.body.Art, req.body.Academic, req.body.Idea, req.body.UCC, req.body.culture, req.body.Design, req.body.Slogan, req.body.Economy];
   conn.query(sql, params, function (err, rows, fields) {
-    if(err) return res.status(400).json({Interest: false,  message : "Interest add error"});
+    if(err) return res.status(200).json({Interest: false,  message : "Interest add error"});
     else {
       return res.status(200).json({Interest : true, message : "Interest add success"});
     };
   });
+})
+
+//현재의 관심사 불러오기
+router.post('/getCurrentInterest', (req, res, next) => {
+
+  var sql = "select * from Interest where User_code = ?";
+  conn.query(sql, req.body.CurrentUserCode, function(err, rows, fields) {
+    if(err) console.log("쿼리 오류");
+    else {
+      return res.status(200).json({CurrentInterest : rows[0]});
+    }
+  })
 })
 
 router.post('/Quit', (req, res, next) => {
