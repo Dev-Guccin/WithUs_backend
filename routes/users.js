@@ -67,9 +67,9 @@ router.post('/getCurrentInterest', (req, res, next) => {
 
   var sql = "select * from Interest where User_code = ?";
   conn.query(sql, req.body.CurrentUserCode, function(err, rows, fields) {
-    if(err) console.log("쿼리 오류");
+    if(err) res.status(200).json({getData : false, message : "쿼리 오류"});
     else {
-      return res.status(200).json({CurrentInterest : rows[0]});
+      return res.status(200).json({getData : true, CurrentInterest : rows[0]});
     }
   })
 })
