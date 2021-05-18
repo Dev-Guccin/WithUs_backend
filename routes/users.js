@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const db = require('../config/database.js');
 const {idOVerlap} = require('./Authentication');
+const { get } = require('./teamBoard.js');
 const conn = db.init();
 
 router.post('/join', idOVerlap ,function(req, res, next) { // 회원가입 라우터
@@ -145,5 +146,45 @@ router.post('/MyTeamBoard', (req, res, next) => {
     }
   })
 })
-
+//내가 신청한 목록 확인하기
+router.get('/ApplicationList/:user_id', (req, res, next) => {
+  var user_id = parseInt(req.params.user_id)
+  console.log("user_id:",user_id)
+  var sql = `select * from Team_Waiter inner join TeamBoard on TeamBoard.TB_code = Team_Waiter.TB_code where Team_Waiter.waiter_code=${user_id} order by waiter_time desc`;
+  conn.query(sql, req.body.User_code, (err, rows, field) => {
+    if(err) return res.status(400).json({message  : "querry error"});
+    else {
+      //return res.status(200).json({getMyTeamBoard : true, MyTeamBoard : rows});
+       console.log("test", rows);
+       res.status(200).json(rows);
+    }
+  })
+})
+//내 프로젝트에 신청한 목록 확인
+router.get('/ApplicationCheck/:user_id', (req, res, next) => {
+  var user_id = parseInt(req.params.user_id)
+  console.log("user_id:",user_id)
+  var sql = `select Team_Waiter.TB_code,TB_title,TB_contestOrProject,waiter_code,waiter_time,TeamBoard.CT_code,waiter_enter,user_name,TB_recruitNumber,TB_finalNumber from Team_Waiter join User on User.user_code = Team_Waiter.waiter_code join TeamBoard on TeamBoard.user_code = Team_Waiter.User_code where Team_Waiter.User_code=${user_id} order by waiter_time desc;`;
+  conn.query(sql, req.body.User_code, (err, rows, field) => {
+    if(err) return res.status(400).json({message  : "querry error"});
+    else {
+      //return res.status(200).json({getMyTeamBoard : true, MyTeamBoard : rows});
+       console.log("test", rows);
+       res.status(200).json(rows);
+    }
+  })
+})
+//내 프로젝트에 신청한 사람 변경
+router.post('/ApplicationCheck/', (req, res, next) => {
+  console.log("check body:",req.body)
+  var sql = `update * from Team_waiter`;
+  conn.query(sql, req.body.User_code, (err, rows, field) => {
+    if(err) return res.status(400).json({message  : "querry error"});
+    else {
+      //return res.status(200).json({getMyTeamBoard : true, MyTeamBoard : rows});
+       console.log("test", rows);
+       res.status(200).json(rows);
+    }
+  })
+})
 module.exports = router;
