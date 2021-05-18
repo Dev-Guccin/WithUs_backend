@@ -61,5 +61,48 @@ router.get('/', (req, res) => {
     });
   });
 
+// apply team
+router.post('/apply', (req,res) => {
+  const applyInfo = req.body;
+  console.log(applyInfo);
+
+  if(!applyInfo.reApply){ // 최초지원
+    const sql = "Insert into withus.Team_Waiter (waiter_code, TB_code, User_code, CT_code, waiter_content,waiter_enter, waiter_nickname, waiter_time) values (?,?,?,?,?,default,?,default)";
+    const params = [applyInfo.waiter_code, applyInfo.TB_code,applyInfo.User_code,applyInfo.CT_code, applyInfo.waiter_content, applyInfo.waiter_nickname];
+    conn.query(sql, params, function (err, rows, fields) {
+      if(err) console.log("sql error:", err);
+      else{
+          res.send(applyInfo);
+        }
+        });
+
+  }else{ // 재지원
+    const sql = "Update  withus.Team_Waiter set waiter_content = ?, waiter_enter = 0,  waiter_nickname = ?, waiter_time = now() where waiter_code = ? and TB_code = ?";
+    const params = [applyInfo.waiter_content, applyInfo.waiter_nickname,applyInfo.waiter_code,applyInfo.TB_code];
+    conn.query(sql, params, function (err, rows, fields) {
+      if(err) console.log("sql error:", err);
+      else{
+          res.send(applyInfo);
+        }
+        });
+  }
+});
+
+router.get('/applyinfo', (req, res) => {
+  const TB_code = req.query.TB_code;
+  const waiter_code = req.query.waiter_code;
+  console.log(req.query);
+
+  const sql = `select waiter_enter from withus.Team_Waiter where TB_code = ${TB_code} and waiter_code = ${waiter_code}`;
+  conn.query(sql, function (err, rows, fields) {
+    if(err) console.log("sql error:", err);
+    else {
+      res.send(rows);
+      console.log("get applyInfo success!");
+    }
+  });
+});
+
+
 
 module.exports = router;
