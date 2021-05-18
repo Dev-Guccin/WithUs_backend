@@ -67,9 +67,9 @@ router.post('/getCurrentInterest', (req, res, next) => {
 
   var sql = "select * from Interest where User_code = ?";
   conn.query(sql, req.body.CurrentUserCode, function(err, rows, fields) {
-    if(err) console.log("쿼리 오류");
+    if(err) res.status(200).json({getData : false, message : "쿼리 오류"});
     else {
-      return res.status(200).json({CurrentInterest : rows[0]});
+      return res.status(200).json({getData : true, CurrentInterest : rows[0]});
     }
   })
 })
@@ -129,6 +129,19 @@ router.post('/modifyPassword', (req, res) => {
         console.log("의심부분");
         return res.status(200).json({modify : false, message : "현재 비밀번호가 틀렸습니다."});
       }
+    }
+  })
+})
+
+//내가 쓴 글 불러오기
+router.post('/MyTeamBoard', (req, res, next) => {
+
+  var sql = "select t.TB_code, c.CT_code, c.CT_name, t.TB_recruitnumber, t.TB_finalNumber, t.TB_content, t.TB_createDate, t.TB_finalDate, t.TB_contestOrProject from TeamBoard as t join Category as c on t.CT_code = c.CT_code where t.User_code = ?";
+  conn.query(sql, req.body.User_code, (err, rows, field) => {
+    if(err) return res.status(400).json({message  : "querry error"});
+    else {
+      return res.status(200).json({getMyTeamBoard : true, MyTeamBoard : rows});
+      // console.log("test", rows);
     }
   })
 })
