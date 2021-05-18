@@ -133,4 +133,17 @@ router.post('/modifyPassword', (req, res) => {
   })
 })
 
+//내가 쓴 글 불러오기
+router.post('/MyTeamBoard', (req, res, next) => {
+
+  var sql = "select t.TB_code, c.CT_code, c.CT_name, t.TB_recruitnumber, t.TB_finalNumber, t.TB_content, t.TB_createDate, t.TB_finalDate, t.TB_contestOrProject from TeamBoard as t join Category as c on t.CT_code = c.CT_code where t.User_code = ?";
+  conn.query(sql, req.body.User_code, (err, rows, field) => {
+    if(err) return res.status(400).json({message  : "querry error"});
+    else {
+      return res.status(200).json({getMyTeamBoard : true, MyTeamBoard : rows});
+      // console.log("test", rows);
+    }
+  })
+})
+
 module.exports = router;
