@@ -13,9 +13,11 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const contestRouter = require('./routes/contest');
 const LoginRouter = require('./routes/passport');
+const adminRouter = require('./routes/admin');
+const teamRouter = require('./routes/team');
+
 const teamBoardRouter = require('./routes/teamBoard');
 const bookmarkTBRouter = require('./routes/bookmarkTB');
-const teamRouter = require('./routes/team');
 
 const app = express();
 passportConfig();
@@ -55,6 +57,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/contest', contestRouter);
 app.use('/passport', LoginRouter);
+app.use('/admin', adminRouter);
 app.use('/teamboard', teamBoardRouter);
 app.use('/bookmarkTB', bookmarkTBRouter);
 app.use('/team', teamRouter);
