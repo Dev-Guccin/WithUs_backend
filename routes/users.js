@@ -204,4 +204,45 @@ router.post('/ApplicantsCheck/', (req, res, next) => {
     }
   })
 })
+
+//BookMark 추가
+//중복방지
+router.post('/addBookMark', (req, res, next) => {
+  
+  var sql = "insert into BookMark values (?,?)";
+  params = [req.body.User_code, req.body.CB_code];
+  conn.query(sql, params, (err, rows, field) => {
+    if(err) return res.status(200).json({message : "이미 추가되어있습니다."});
+    else {
+      return res.status(200).json({addBookMark : true, message : "북마크에 추가되었습니다."});
+    }
+  })
+})
+
+//공모전 BookMark 가져오기
+router.post('/getBookMark', (req, res, next) => {
+  
+  var sql = "select c.CB_code, c.CB_title, c.CB_startDate, c.CB_finalDate, c.CB_organization, c.CB_field, c.CB_target, c.CB_link from BookMark as b join CompeteBoard as c on b.CB_code = c.CB_code where b.User_code = ?";
+  params = [req.body.User_code];
+  conn.query(sql, params, (err, rows, field) => {
+    if(err) return res.status(400).json({message : err});
+    else {
+      return res.status(200).json({getBookMark : true, BookMarkList : rows});
+    }
+  })
+})
+
+//공모전 BookMark 삭제하기
+router.post('/DeleteBookMark', (req, res, next) => {
+
+  var sql = "delete from BookMark where User_code = ? and CB_code = ?";
+  params = [req.body.User_code, req.body.CB_code];
+  conn.query(sql, params, (err, rows, field) => {
+    if(err) return res.status(400).json({DeleteBookMark : false, message : err});
+    else {
+      return res.status(200).json({DeleteBookMark : true, message : "북마크가 해제되었습니다."});
+    }
+  })
+})
+
 module.exports = router;
