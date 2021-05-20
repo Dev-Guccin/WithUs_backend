@@ -36,7 +36,7 @@ router.get('/board', function(req, res, next) {
   });
 });
 
-/* 관리자페이지 회원정보 페이지 띄워주는 DB쿼리 */
+/* 관리자 회원수정 페이지에서 해당 회원정보 띄워주는 DB쿼리 */
 router.get('/modify/:User_code', function(req, res, next) {
   var User_code = parseInt(req.params.User_code)
   var sql = 'SELECT * FROM withus.User WHERE User_code='+User_code+';';
@@ -48,21 +48,6 @@ router.get('/modify/:User_code', function(req, res, next) {
   });
 });
 
-/* 공모전삭제 DB 쿼리 */
-router.get('/delete/compete/:CB_code', function(req, next) {
-  var CB_code = parseInt(req.params.CB_code);
-  var sql = 'Delete FROM withus.CompeteBoard WHERE CB_code='+CB_code+';';
-  conn.query(sql);
-});
-
-/* 팀원모집 게시글 삭제 DB 쿼리 */
-router.get('/delete/teammate/:TB_code', function(req, next) {
-  var TB_code = parseInt(req.params.TB_code);
-  var sql = 'Delete FROM withus.TeamBoard WHERE TB_code='+TB_code+';';
-  conn.query(sql);
-});
-
-
 /* 회원정보 수정 업데이트 DB 쿼리 */
 router.post('/modify_test/:User_code', function(req, res, next) {
   console.log(req.body);
@@ -72,7 +57,7 @@ router.post('/modify_test/:User_code', function(req, res, next) {
   res.send('성공!!!');
 });
 
-/* 회원정보 삭제 업데이트 DB 쿼리 */
+/* 회원정보 삭제 DB 쿼리 */
 router.post('/delete/user/:User_code', function(req, res, next) {
   console.log(typeof(req.body.User_code));
   console.log(typeof(req.params.User_code));
@@ -80,6 +65,72 @@ router.post('/delete/user/:User_code', function(req, res, next) {
   var sql = 'DELETE FROM withus.User WHERE User_code = '+User_code+';';
   conn.query(sql);
   res.send('성공!!!');
+});
+
+/* 공모전 삭제 DB 쿼리 */
+router.post('/delete/compete/:CB_code', function(req, res, next) {
+  console.log(req.body.CB_code);
+  var CB_code = req.body.CB_code;
+  var sql = 'Delete FROM withus.CompeteBoard WHERE CB_code='+CB_code+';';
+  conn.query(sql);
+  res.send('성공!!!');
+});
+
+/* 팀원모집 게시글 삭제 DB 쿼리 */
+router.post('/delete/teammate/:TB_code', function(req, res, next) {
+  console.log(req.body.CB_code);
+  var TB_code = req.body.TB_code;
+  var sql = 'Delete FROM withus.TeamBoard WHERE TB_code='+TB_code+';';
+  conn.query(sql);
+  res.send('성공!!!');
+});
+
+/* 회원 검색 DB 쿼리 */
+router.post('/search/user', function(req, res, next) {
+  console.log(req.body.User_search);
+  console.log(typeof(req.body.User_search));
+  var Search_code = "'%"+req.body.User_search+"%'";
+  var sql = 'SELECT * FROM withus.User WHERE User_id LIKE '+Search_code+' OR User_name LIKE '+Search_code+' OR User_nickname LIKE '+Search_code+';';
+  console.log(sql);
+  conn.query(sql, function (err, rows) {
+    if(err) console.log('query is not excuted. select fail...\n' + err);
+    else {
+      console.log(rows); 
+      res.send(rows);
+    }
+  });
+});
+
+/* 공모전 검색 DB 쿼리 */
+router.post('/search/compete', function(req, res, next) {
+  console.log(req.body.Compete_search);
+  console.log(typeof(req.body.Compete_search));
+  var Search_code = "'%"+req.body.Compete_search+"%'";
+  var sql = 'SELECT * FROM withus.CompeteBoard WHERE CB_title LIKE '+Search_code+' OR CB_content LIKE '+Search_code+' LIMIT 10;';
+  console.log(sql);
+  conn.query(sql, function (err, rows) {
+    if(err) console.log('query is not excuted. select fail...\n' + err);
+    else {
+      console.log(rows); 
+      res.send(rows);
+    }
+  });
+});
+
+/* 팀원모집 게시판 검색 DB 쿼리 */
+router.post('/search/teammate', function(req, res, next) {
+  console.log(req.body.Teammate_search);
+  console.log(typeof(req.body.Teammate_search));
+  var Search_code = "'%"+req.body.Teammate_search+"%'";
+  var sql = 'SELECT * FROM withus.TeamBoard WHERE TB_title LIKE '+Search_code+' OR TB_content LIKE '+Search_code+';';
+  console.log(sql);
+  conn.query(sql, function (err, rows) {
+    if(err) console.log('query is not excuted. select fail...\n' + err);
+    else {
+      console.log(rows); 
+      res.send(rows);
+    }
+  });
 });
 
 module.exports = router;
