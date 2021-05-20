@@ -2,7 +2,20 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database.js');
 const conn = db.init();
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
 
+
+const timezoneOffset = new Date().getTimezoneOffset() * 60000; 
+
+function stripHtml(html){
+
+  const dom = new JSDOM(`<!DOCTYPE html><div></div>`);
+  dom.window.document.querySelector("div").innerHTML = html
+
+  return dom.window.document.querySelector("div").textContent || dom.window.document.querySelector("div").innerText;
+
+}
 
 
 //create teamBoard
@@ -56,6 +69,11 @@ router.get('/', (req, res) => {
     conn.query(sql, function (err, rows, fields) {
       if(err) console.log("sql error:", err);
       else {
+        rows.map((item) =>{
+          item.TB_content = stripHtml(item.TB_content).substring(0,93);
+          item.TB_createDate = new Date(new Date(item.TB_createDate) - timezoneOffset).toJSON().substring(0,10);
+          item.TB_finalDate = new Date(new Date(item.TB_finalDate) - timezoneOffset).toJSON().substring(0,10)
+        })
         res.send(rows);
       }
     });

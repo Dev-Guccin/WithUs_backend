@@ -6,6 +6,17 @@ const db = require('../config/database.js');
 const { idOVerlap } = require('./Authentication');
 const { get } = require('./teamBoard.js');
 const conn = db.init();
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+
+function stripHtml(html){
+
+  const dom = new JSDOM(`<!DOCTYPE html><div></div>`);
+  dom.window.document.querySelector("div").innerHTML = html
+
+  return dom.window.document.querySelector("div").textContent || dom.window.document.querySelector("div").innerText;
+
+}
 
 router.post('/join', idOVerlap, function (req, res, next) { // 회원가입 라우터
 
@@ -141,6 +152,8 @@ router.post('/MyTeamBoard', (req, res, next) => {
   conn.query(sql, req.body.User_code, (err, rows, field) => {
     if (err) return res.status(400).json({ message: "querry error" });
     else {
+        rows.map((item) =>{
+        item.TB_content = stripHtml(item.TB_content).substring(0,93);})
       return res.status(200).json({ getMyTeamBoard: true, MyTeamBoard: rows });
       // console.log("test", rows);
     }
