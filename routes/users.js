@@ -245,4 +245,30 @@ router.post('/DeleteBookMark', (req, res, next) => {
   })
 })
 
+//팀원모집 게시판 공모전 가져오기
+router.post('/getTeamBookMark', (req, res, next) => {
+  
+  var sql = "select b.BTB_code, b.TB_code, t.TB_title, t.TB_recruitNumber, t.TB_finalNumber, t.TB_createDate, t.TB_finalDate, t.TB_contestOrProject from BookMarkTB as b join TeamBoard as t on b.TB_code = t.TB_code where b.User_code = ?"
+  params = [req.body.User_code];
+  conn.query(sql, params, (err, rows, field) => {
+    if(err) return res.status(400).json({message : err});
+    else {
+      return res.status(200).json({getTeamBookMark : true, BookMarkList : rows});
+    }
+  })
+})
+
+//팀원모집 게시판 공모전 삭제하기
+router.post('/DeleteTeamBookMark', (req, res, next) => {
+
+  var sql = "delete from BookMarkTB where BTB_code = ?";
+  params = [req.body.BTB_code];
+  conn.query(sql, params, (err, rows, field) => {
+    if(err) return res.status(400).json({DeleteTeamBookMark : false, message : err});
+    else {
+      return res.status(200).json({DeleteTeamBookMark : true, message : "북마크가 해제되었습니다."});
+    }
+  })
+})
+
 module.exports = router;
