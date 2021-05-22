@@ -19,6 +19,8 @@ const teamRouter = require('./routes/team');
 const teamBoardRouter = require('./routes/teamBoard');
 const bookmarkTBRouter = require('./routes/bookmarkTB');
 
+const cron = require('./utils/autoCrawling')
+
 const app = express();
 passportConfig();
 const cors = require('cors');
