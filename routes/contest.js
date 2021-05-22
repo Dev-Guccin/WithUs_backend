@@ -79,13 +79,19 @@ router.post('/options/:page', function(req, res, next) {
   // 정렬방식을 확인하여 db query를 만든다.
   sort = data.sort
   console.log("sort방식:", typeof(sort))
-  //1->최신순, 2->조회순 3->마감날짜순
+  //1->최신순, 2->시작 가까운순 3->마감날짜순 4->마감 가까운순
   sortstring=""
   if(sort == 1){
     sortstring="order by CB_startDate desc"
   }
   else if(sort == 2){
+    sortstring="order by ABS(DATEDIFF(NOW(), `CB_startDate`))"
+  }
+  else if(sort == 3){
     sortstring="order by CB_finalDate desc"
+  }
+  else if(sort == 4){
+    sortstring="order by ABS(DATEDIFF(NOW(), `CB_finalDate`))"
   }
 
   //DB쿼리를 날린다.
