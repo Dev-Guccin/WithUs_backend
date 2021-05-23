@@ -18,6 +18,15 @@ function stripHtml(html){
 
 }
 
+function stripTime(time){
+
+  const timezoneOffset = new Date().getTimezoneOffset() * 60000;
+  const monthDay = new Date(new Date(time) - timezoneOffset).toJSON().split("T")[0].substring(0,10);
+  const HourMinute = new Date(new Date(time) - timezoneOffset).toJSON().split("T")[1].substring(0,5);
+  
+  return monthDay + " " + HourMinute;
+}
+
 router.post('/join', idOVerlap, function (req, res, next) { // 회원가입 라우터
 
   var Originalpassword = req.body.User_password;
@@ -168,6 +177,9 @@ router.get('/ApplicationList/:user_id', (req, res, next) => {
     if (err) return res.status(400).json({ message: "querry error" });
     else {
       //return res.status(200).json({getMyTeamBoard : true, MyTeamBoard : rows});
+      rows.map((item)=>{
+        item.waiter_time = stripTime(item.waiter_time)
+      })
       console.log("test", rows);
       res.status(200).json(rows);
     }
@@ -177,11 +189,14 @@ router.get('/ApplicationList/:user_id', (req, res, next) => {
 router.get('/ApplicantsCheck/:user_id', (req, res, next) => {
   var user_id = parseInt(req.params.user_id)
   console.log("user_id:", user_id)
-  var sql = `select Team_Waiter.TB_code,TB_title,TB_contestOrProject,waiter_code,waiter_time,TeamBoard.CT_code,waiter_enter,user_name,TB_recruitNumber,TB_finalNumber from Team_Waiter join User on User.user_code = Team_Waiter.waiter_code join TeamBoard on TeamBoard.TB_code = Team_Waiter.TB_code where Team_Waiter.User_code=${user_id} order by waiter_time asc;`;
+  var sql = `select Team_Waiter.TB_code,waiter_content, TB_title,TB_contestOrProject,waiter_code,waiter_time,TeamBoard.CT_code,waiter_enter,user_nickname,TB_recruitNumber,TB_finalNumber from Team_Waiter join User on User.user_code = Team_Waiter.waiter_code join TeamBoard on TeamBoard.TB_code = Team_Waiter.TB_code where Team_Waiter.User_code=${user_id} order by waiter_time asc;`;
   conn.query(sql, req.body.User_code, (err, rows, field) => {
     if (err) return res.status(400).json({ message: "querry error" });
     else {
       //return res.status(200).json({getMyTeamBoard : true, MyTeamBoard : rows});
+      rows.map((item)=>{
+        item.waiter_time = stripTime(item.waiter_time)
+      })
       console.log("test", rows);
       res.status(200).json(rows);
     }

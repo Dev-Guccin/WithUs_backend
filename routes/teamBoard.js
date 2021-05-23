@@ -23,8 +23,8 @@ router.post('/', (req,res) => {
     const teamBoardData = req.body;
     console.log(teamBoardData);
 
-    const sql = "Insert into withus.TeamBoard (User_code, CT_code, TB_title,TB_recruitNumber, TB_finalNumber, TB_content, TB_createDate,TB_finalDate,TB_contestOrProject) values (?,?,?,default,?,?,default,?,?)";
-    const params = [teamBoardData.User_code, teamBoardData.CT_code, teamBoardData.TB_title, teamBoardData.TB_finalNumber, teamBoardData.TB_content, teamBoardData.TB_finalDate, teamBoardData.TB_contestOrProject];
+    const sql = "Insert into withus.TeamBoard (User_code, CT_code, TB_title,TB_recruitNumber, TB_finalNumber, TB_content, TB_createDate,TB_finalDate,TB_contestOrProject, TB_CBcode) values (?,?,?,default,?,?,default,?,?,?)";
+    const params = [teamBoardData.User_code, teamBoardData.CT_code, teamBoardData.TB_title, teamBoardData.TB_finalNumber, teamBoardData.TB_content, teamBoardData.TB_finalDate, teamBoardData.TB_contestOrProject, teamBoardData.TB_CBcode];
     conn.query(sql, params, function (err, rows, fields) {
         if(err) console.log("sql error:", err);
         else{
@@ -52,8 +52,8 @@ router.post('/update', (req,res) => {
   const teamBoardData = req.body;
   console.log("data",teamBoardData);
 
-  const sql = "update withus.TeamBoard set CT_code = ?, TB_title = ?, TB_finalNumber = ?, TB_content = ?, TB_finalDate =?, TB_contestOrProject = ? where TB_code = ?;"
-  const params = [teamBoardData.CT_code, teamBoardData.TB_title, teamBoardData.TB_finalNumber, teamBoardData.TB_content, teamBoardData.TB_finalDate,teamBoardData.TB_contestOrProject,teamBoardData.TB_code];
+  const sql = "update withus.TeamBoard set CT_code = ?, TB_title = ?, TB_finalNumber = ?, TB_content = ?, TB_finalDate =?, TB_contestOrProject = ?, TB_CBcode = ? where TB_code = ?;"
+  const params = [teamBoardData.CT_code, teamBoardData.TB_title, teamBoardData.TB_finalNumber, teamBoardData.TB_content, teamBoardData.TB_finalDate,teamBoardData.TB_contestOrProject,teamBoardData.TB_CBcode,teamBoardData.TB_code];
   conn.query(sql,params, function (err, rows, fields) {
     if(err) console.log("sql error:", err);
     else{
@@ -120,6 +120,23 @@ router.get('/applyinfo', (req, res) => {
     }
   });
 });
+
+router.get('/contestinfo', (req, res) => {
+  const sql = 'select CB_code, CB_title, CB_field, CB_photo, CB_startDate, CB_finalDate, CB_organization from withus.CompeteBoard order by CB_startDate desc';
+
+  conn.query(sql, function (err, rows, fields) {
+    if(err) console.log("sql error:", err);
+    else {
+      rows.map((item)=>{
+        item.CB_startDate = new Date(new Date(item.CB_startDate) - timezoneOffset).toJSON().substring(0,10);
+        item.CB_finalDate = new Date(new Date(item.CB_finalDate) - timezoneOffset).toJSON().substring(0,10);
+      })
+      res.send(rows);
+      console.log("get contestInfo success!");
+    }
+  });
+});
+
 
 
 
