@@ -299,4 +299,19 @@ router.post('/DeleteTeamBookMark', (req, res, next) => {
   })
 })
 
+//유저의 상세데이터 확인하기
+router.post('/userDetail', (req, res, next) => {
+  var data = req.body.data
+  console.log("tet , user_name:",data)
+
+  var sql = "select * from User where User_name='"+data.user_name+"';";
+  console.log(sql)
+  conn.query(sql, (err, rows, field) => {
+    if(err) return res.status(400).json({status:"success"});
+    else {
+      console.log(rows)
+      return res.send(rows)
+    }
+  })
+})
 module.exports = router;

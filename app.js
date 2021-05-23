@@ -19,10 +19,13 @@ const teamRouter = require('./routes/team');
 const teamBoardRouter = require('./routes/teamBoard');
 const bookmarkTBRouter = require('./routes/bookmarkTB');
 
+const cron = require('./utils/autoCrawling')
+
 const app = express();
 passportConfig();
 const cors = require('cors');
 let corsOptions = {
+  //origin: 'http://34.71.226.15:8080', // 허락하고자 하는 요청 주소
   origin: 'http://localhost:3000', // 허락하고자 하는 요청 주소
   credentials: true // true로 하면 설정한 내용을 response 헤더에 추가 해줍니다.
 } 
