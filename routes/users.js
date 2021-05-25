@@ -50,7 +50,7 @@ router.post('/join', idOVerlap, function (req, res, next) { // 회원가입 라�
 });
 
 router.post('/modify', (req, res, next) => { // 마이페이지 회원정보 변경 (아이디, 이름, 성별은 변경 불가능)
-  console.log(req.body);
+  console.log("마이페이지수정", req.user);
   var sql = "Update User set User_name = ?, User_phone = ?, User_university = ?, User_nickname = ?, User_area = ?, User_major = ?, User_certificate = ?, User_introduction = ? where User_code = ?";
   var params = [req.body.User_name, req.body.User_phone, req.body.User_university, req.body.User_nickname, req.body.User_area, req.body.User_major, req.body.User_certificate, req.body.User_introduction, req.body.User_code];
   conn.query(sql, params, function (err, rows, fields) {
@@ -71,7 +71,7 @@ router.post('/modify', (req, res, next) => { // 마이페이지 회원정보 변
 
 //관심사 추가
 router.post('/Interest', (req, res, next) => {
-  console.log(req.body);
+  console.log("관심사 추가", req.user);
 
   var sql = "Insert into Interest (User_code, ScienceEnginnering, ContentsWebtoon, EnvironmentEnergy, Employment, Art, Academic, Idea, UCC, culture, Design, Slogan, Economy) values (?,?,?,?,?,?,?,?,?,?,?,?,?) on duplicate key update ScienceEnginnering = ?, ContentsWebtoon = ?, EnvironmentEnergy = ?, Employment = ?, Art = ?, Academic = ?, Idea = ?, UCC = ?, culture = ?, Design = ?, Slogan = ?, Economy = ?"
   var params = [req.body.User_code, req.body.ScienceEnginnering, req.body.ContentsWebtoon, req.body.EnvironmentEnergy, req.body.Employment, req.body.Art, req.body.Academic, req.body.Idea, req.body.UCC, req.body.culture, req.body.Design, req.body.Slogan, req.body.Economy, req.body.ScienceEnginnering, req.body.ContentsWebtoon, req.body.EnvironmentEnergy, req.body.Employment, req.body.Art, req.body.Academic, req.body.Idea, req.body.UCC, req.body.culture, req.body.Design, req.body.Slogan, req.body.Economy];
@@ -96,7 +96,7 @@ router.post('/getCurrentInterest', (req, res, next) => {
 })
 
 router.post('/Quit', (req, res, next) => {
-  console.log(req.body);
+  console.log("회원탈퇴", req.user);
 
   var getPassword = "select User_password from User where User_code = ?";
   conn.query(getPassword, req.body.User_code, async function (err, rows, fields) {
@@ -120,6 +120,7 @@ router.post('/Quit', (req, res, next) => {
 })
 
 router.post('/modifyPassword', (req, res) => {
+  console.log("비밀번호수정", req.user);
   var getPassword = "select User_password from User where User_code = ?";
   conn.query(getPassword, req.body.User_code, async function (err, rows, fields) {
     if (err) return res.status(400).json({ selectPassword: false, message: "query error" });
@@ -157,6 +158,8 @@ router.post('/modifyPassword', (req, res) => {
 //내가 쓴 글 불러오기
 router.post('/MyTeamBoard', (req, res, next) => {
 
+  console.log("내가쓴글", req.user);
+
   var sql = "select t.TB_code, c.CT_code, c.CT_name, t.TB_recruitnumber, t.TB_finalNumber, t.TB_content, t.TB_createDate, t.TB_finalDate, t.TB_contestOrProject from TeamBoard as t join Category as c on t.CT_code = c.CT_code where t.User_code = ?";
   conn.query(sql, req.body.User_code, (err, rows, field) => {
     if (err) return res.status(400).json({ message: "querry error" });
@@ -170,6 +173,7 @@ router.post('/MyTeamBoard', (req, res, next) => {
 })
 //내가 신청한 목록 확인하기
 router.get('/ApplicationList/:user_id', (req, res, next) => {
+  console.log("신청목록", req.user);
   var user_id = parseInt(req.params.user_id)
   console.log("user_id:", user_id)
   var sql = `select * from Team_Waiter inner join TeamBoard on TeamBoard.TB_code = Team_Waiter.TB_code where Team_Waiter.waiter_code=${user_id} order by waiter_time desc`;
@@ -187,6 +191,7 @@ router.get('/ApplicationList/:user_id', (req, res, next) => {
 })
 //내 프로젝트에 신청한 목록 확인
 router.get('/ApplicantsCheck/:user_id', (req, res, next) => {
+  console.log("신청한사람목록", req.user);
   var user_id = parseInt(req.params.user_id)
   console.log("user_id:", user_id)
   var sql = `select Team_Waiter.TB_code,waiter_content, TB_title,TB_contestOrProject,waiter_code,waiter_time,TeamBoard.CT_code,waiter_enter,user_name,TB_recruitNumber,TB_finalNumber from Team_Waiter join User on User.user_code = Team_Waiter.waiter_code join TeamBoard on TeamBoard.TB_code = Team_Waiter.TB_code where Team_Waiter.User_code=${user_id} order by waiter_time asc;`;
