@@ -70,7 +70,7 @@ router.get('/', (req, res) => {
       if(err) console.log("sql error:", err);
       else {
         rows.map((item) =>{
-          item.TB_content = stripHtml(item.TB_content).substring(0,93);
+          item.TB_content = stripHtml(item.TB_content).substring(0,57);
           item.TB_createDate = new Date(new Date(item.TB_createDate) - timezoneOffset).toJSON().substring(0,10);
           item.TB_finalDate = new Date(new Date(item.TB_finalDate) - timezoneOffset).toJSON().substring(0,10)
         })
