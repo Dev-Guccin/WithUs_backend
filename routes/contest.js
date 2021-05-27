@@ -5,7 +5,7 @@ var conn = db.init();
 
 const fieldname = ["환경/에너지","콘텐츠/웹툰","취업/창업","음악/예술","연구/학술/논문","아이디어/기획",
 "사진/영상/UCC","문화/영화/문학","디자인/미술","네이밍/슬로건","금융/경제/경영","과학/공학/IT"]
-const targetname=["누구나지원", "청소년","대학(원)생", "취준생", "직장인"]
+const targetname=["누구나지원", "청소년","대학", "취준생", "직장인"]
 
 router.post('/options/:page', function(req, res, next) {
   var data = req.body.data
